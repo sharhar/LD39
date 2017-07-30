@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
-
+    
+    public CameraController cameraController;
     public Rigidbody rigid;
     public float distToGround;
     public GameObject panel;
@@ -14,6 +16,9 @@ public class PlayerController : MonoBehaviour {
     public float enemyCooldownTime;
     public float enemyDir;
     public GameObject enemyPrefab;
+    public GameObject scoreText;
+    public Text text;
+    public int score = 0;
 
     // Use this for initialization
     void Start() {
@@ -25,6 +30,8 @@ public class PlayerController : MonoBehaviour {
         enemyCooldown = 2;
         enemyCooldownTime = 2;
         enemyDir = 1;
+        cameraController = Camera.main.GetComponent<CameraController>();
+        text = scoreText.GetComponent<Text>();
     }
 
     bool IsGrounded() {
@@ -42,7 +49,7 @@ public class PlayerController : MonoBehaviour {
 
         if (Input.GetAxis("Jump") > 0 && IsGrounded()) {
             speed.y = 10;
-            panelcontroller.currentCharge -= 0.07f;
+            panelcontroller.currentCharge -= 0.1f;
         }
 
         if (Input.GetAxis("Fire3") > 0 && shotCooldown <= 0) {
@@ -51,24 +58,40 @@ public class PlayerController : MonoBehaviour {
             shotController.dir = dir;
 
             shotCooldown = 0.1f;
-            panelcontroller.currentCharge -= 0.03f;
+            panelcontroller.currentCharge -= 0.04f;
         }
 
         rigid.velocity = speed;
 
-        panelcontroller.currentCharge -= Mathf.Abs(speed.x * 0.015f) * Time.deltaTime;
+        panelcontroller.currentCharge -= Mathf.Abs(speed.x * 0.02f) * Time.deltaTime;
 
         if (enemyCooldown < 0) {
-            enemyCooldownTime /= 1.05f;
+            enemyCooldownTime /= 1.02f;
             enemyCooldown = enemyCooldownTime;
-            GameObject enemy = (GameObject)Instantiate(enemyPrefab, new Vector3(20*enemyDir, 1, 0), transform.rotation);
+
+            float r = Random.Range(0.0f, 1.0f);
+
+            float elevation = 1;
+
+            if (r > 0.5f) {
+                elevation = 6;
+            }
+
+            GameObject enemy = (GameObject)Instantiate(enemyPrefab, new Vector3(20*enemyDir, elevation, 0), transform.rotation);
             EnemyController enemyController = enemy.GetComponent<EnemyController>();
             enemyController.dir = - enemyDir;
-            enemyCooldownTime = Mathf.Max(enemyCooldownTime, 0.5f);
+            enemyController.cameraController = cameraController;
+            enemyCooldownTime = Mathf.Max(enemyCooldownTime, 1);
             enemyDir = -enemyDir;
         }
 
         shotCooldown -= Time.deltaTime;
         enemyCooldown -= Time.deltaTime;
+
+        if (panelcontroller.currentCharge <= 0) {
+            cameraController.mode = 3;
+        }
+
+        text.text = "Score: " + score;
 	}
 }

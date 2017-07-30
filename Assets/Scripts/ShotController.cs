@@ -5,17 +5,20 @@ public class ShotController : MonoBehaviour {
 
     public float dir;
     public GameObject enemyPrefab;
+    public PlayerController playerController;
 
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.GetComponent<EnemyController>() != null) {
             Destroy(other.gameObject);
             Destroy(this.gameObject);
+
+            playerController.score++;
         }
     }
 
     // Use this for initialization
     void Start () {
-	
+        playerController = Camera.main.GetComponent<CameraController>().gameInst.GetComponentInChildren<PlayerController>();
 	}
 	
 	// Update is called once per frame

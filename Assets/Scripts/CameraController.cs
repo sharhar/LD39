@@ -1,26 +1,30 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class CameraController : MonoBehaviour {
 
+    public GameObject startText;
+    public GameObject loseTextPrefab;
+    public GameObject loseText = null;
+    public GameObject gamePrefab;
+    public GameObject gameInst;
+
+    public float loseCooldown = 0;
+
+    public int mode = 0;
+
     // Use this for initialization
     void Start()
     {
-        // set the desired aspect ratio (the values in this example are
-        // hard-coded for 16:9, but you could make them into public
-        // variables instead so you can set them at design time)
         float targetaspect = 4.0f / 3.0f;
 
-        // determine the game window's current aspect ratio
         float windowaspect = (float)Screen.width / (float)Screen.height;
 
-        // current viewport height should be scaled by this amount
         float scaleheight = windowaspect / targetaspect;
 
-        // obtain camera component so we can modify its viewport
         Camera camera = GetComponent<Camera>();
 
-        // if scaled height is less than current height, add letterbox
         if (scaleheight < 1.0f)
         {
             Rect rect = camera.rect;
@@ -32,7 +36,7 @@ public class CameraController : MonoBehaviour {
 
             camera.rect = rect;
         }
-        else // add pillarbox
+        else
         {
             float scalewidth = 1.0f / scaleheight;
 
@@ -49,6 +53,37 @@ public class CameraController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-	
-	}
+        if (Input.anyKeyDown && mode < 2 && loseCooldown <= 0) {
+            if (mode == 0)
+            {
+                Destroy(startText);
+            }
+            else {
+                Destroy(loseText);
+                loseText = null;
+            }
+
+            gameInst = (GameObject)Instantiate(gamePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            mode = 2;
+        }
+
+        if (mode == 3) {
+            if (gameInst != null) {
+                int score = gameInst.GetComponentInChildren<PlayerController>().score;
+                Destroy(gameInst);
+                gameInst = null;
+                if (loseText == null)
+                {
+                    loseText = (GameObject)Instantiate(loseTextPrefab);
+                    Text text = loseText.GetComponentInChildren<Text>();
+                    text.text = text.text + score;
+                }
+            }
+            mode = 1;
+            loseCooldown = 2;
+        }
+
+        loseCooldown -= Time.deltaTime;
+
+    }
 }
