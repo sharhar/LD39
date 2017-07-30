@@ -8,6 +8,7 @@ public class PanelController : MonoBehaviour {
 
     public float currentCharge = 1;
     public float time = 0;
+    public float dir = 1;
 
     // Use this for initialization
     void Start () {
@@ -26,7 +27,7 @@ public class PanelController : MonoBehaviour {
 
         float angle = Mathf.Atan2(diff.y, diff.x);
 
-        this.transform.eulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg + 90);
+        this.transform.eulerAngles = new Vector3(0, 0, dir * angle * Mathf.Rad2Deg + 90 * dir);
 
         RaycastHit hit;
 

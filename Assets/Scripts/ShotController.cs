@@ -9,16 +9,21 @@ public class ShotController : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.GetComponent<EnemyController>() != null) {
+            playerController.gameObject.GetComponent<AudioSource>().Play();
+
             Destroy(other.gameObject);
             Destroy(this.gameObject);
-
+            
             playerController.score++;
+
+            playerController.text.text = "Score: " + playerController.score;
         }
     }
 
     // Use this for initialization
     void Start () {
         playerController = Camera.main.GetComponent<CameraController>().gameInst.GetComponentInChildren<PlayerController>();
+        GetComponent<AudioSource>().Play();
 	}
 	
 	// Update is called once per frame

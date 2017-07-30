@@ -55,15 +55,15 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetAxis("Fire3") > 0 && shotCooldown <= 0) {
             GameObject shot = (GameObject)Instantiate(shotPrefab, transform.position + new Vector3(dir, 0, 0), transform.rotation);
             ShotController shotController = shot.GetComponent<ShotController>();
-            shotController.dir = dir;
+            shotController.dir = -dir;
 
             shotCooldown = 0.1f;
-            panelcontroller.currentCharge -= 0.04f;
+            panelcontroller.currentCharge -= 0.05f;
         }
 
         rigid.velocity = speed;
 
-        panelcontroller.currentCharge -= Mathf.Abs(speed.x * 0.02f) * Time.deltaTime;
+        panelcontroller.currentCharge -= Mathf.Abs(speed.x * 0.04f) * Time.deltaTime;
 
         if (enemyCooldown < 0) {
             enemyCooldownTime /= 1.02f;
@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour {
 
             GameObject enemy = (GameObject)Instantiate(enemyPrefab, new Vector3(20*enemyDir, elevation, 0), transform.rotation);
             EnemyController enemyController = enemy.GetComponent<EnemyController>();
-            enemyController.dir = - enemyDir;
+            enemyController.dir = enemyDir;
             enemyController.cameraController = cameraController;
             enemyCooldownTime = Mathf.Max(enemyCooldownTime, 1);
             enemyDir = -enemyDir;
@@ -92,6 +92,7 @@ public class PlayerController : MonoBehaviour {
             cameraController.mode = 3;
         }
 
-        text.text = "Score: " + score;
-	}
+        panelcontroller.dir = dir;
+        transform.localScale = new Vector3(dir, 1, 1);
+    }
 }
